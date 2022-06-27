@@ -1,0 +1,143 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+
+img {
+    width: 183px;
+    height: 281px;
+}
+
+.wrapper {
+    font-family: 'Inter', sans-serif;
+    box-sizing: border-box;
+    display: flex;
+    width: 454px;
+    height: 281px;
+    background-color: #FFFFFF;
+    filter: drop-shadow(0px 4px 12px rgba(0, 0, 0, 0.15));
+    margin-left: 32px;
+    margin-top: 32px;
+}
+
+.main-info {
+    margin-left: 20px;
+}
+
+.date {
+    margin-bottom: 0;
+    font-size: 12px;
+    color: #827E7E;
+}
+
+.genres {
+    display: flex;
+    flex-wrap: wrap;
+    box-sizing: border-box;
+    font-size: 12px;
+    margin-top: 0;
+    height: auto;
+    width: 240px;
+    margin-bottom: 3px;
+}
+
+.genres-box {
+    width: auto;
+    white-space: nowrap;
+    justify-content: center;
+    border: 1px solid #D9D9D9;
+    border-radius: 2px;
+    padding: 2px;
+    margin-right: 5px;
+    margin-top: 5px;
+    color: rgba(0, 0, 0, 0.65);
+    background-color: #FAFAFA;
+}
+
+.description {
+    margin-top: 7px;
+    font-size: 12px;
+    width: 228px;
+    height: 129px;
+}
+
+.rating {
+    padding:0;
+    margin: 0;
+    position: absolute;
+    bottom: 5px;
+    left: 185px;
+    width: 100%;
+}
+
+.header {
+    font-size: 20px;
+    margin-top: 12px;
+    max-width: 200px;
+    margin-bottom: 0;
+}
+
+.header-info {
+    display: flex;
+    padding-right: 10px;
+    width:100%;
+}
+
+.vote-average {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    left: 412px;
+    top: 10px;
+    width: 30px;
+    height:30px;
+    border-radius: 50%;
+    font-size: 12px;
+}
+
+.low {
+    border:2px solid #E90000;
+}
+
+.low-middle {
+    border:2px solid #E97E00;
+}
+
+.middle {
+    border:2px solid #E9D100;
+}
+
+.high {
+    border:2px solid #66E900;
+}
+
+@media (max-width: 479px) {
+    img {
+        margin: 6px 0 0 10px;
+        width: 60px;
+        height: 91px;
+    }
+
+    .wrapper {
+        width: 387px;
+        height: 245px;
+        margin: 20px 0 0 0;
+
+    }
+
+    .vote-average {
+        left: 345px;
+    }
+
+    .rating {
+        left: 110px;
+        width: 280px;
+    }
+
+    .description {
+        position: absolute;
+        left: 10px;
+        margin-top: 5px;
+        width: 367px;
+        height: 92px;
+    }
+
+}

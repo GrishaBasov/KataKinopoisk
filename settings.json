@@ -1,0 +1,9 @@
+{
+  "[javascript]": {
+    "editor.defaultFormatter": "prettier",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": true
+    },
+    "editor.formatOnSave": true
+  }
+}

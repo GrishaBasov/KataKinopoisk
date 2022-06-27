@@ -1,0 +1,25 @@
+.search-field {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 1010px;
+    height: 80px;
+    box-sizing: border-box;
+    background-color: #FFFFFF;
+}
+
+.new-search {
+    width: 938px;
+    height: 40px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    border: 1px solid #D9D9D9;
+    border-radius: 4px;
+}
+
+@media (max-width: 479px) {
+    .search-field {
+        width: 388px;
+    }
+}

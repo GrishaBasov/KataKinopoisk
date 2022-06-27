@@ -1,0 +1,30 @@
+.main {
+    margin: 0;
+    padding:0;
+    display: flex;
+    justify-content: center;
+    background-color: #F7F7F7;
+}
+
+body {
+    margin: 0;
+    background-color: #F7F7F7;
+}
+
+@media (max-width: 479px) {
+    .main {
+        max-width: 479px;
+        margin: 0;
+        padding:0;
+        display: flex;
+        justify-content: center;
+        background-color: #F7F7F7;
+    }
+    body {
+        display: flex;
+        justify-content: center;
+        max-width: 479px;
+        margin: 0;
+        background-color: #FFFFFF;
+    }
+}

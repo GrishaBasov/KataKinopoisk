@@ -1,0 +1,23 @@
+.alert {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    height: 200px;
+    background-color: #FFFFFF;
+}
+
+@media (max-width: 479px) {
+    .alert {
+        max-width: 388px;
+    }
+
+    .ant-tabs-content-holder{
+        background-color: #FFFFFF;
+    }
+
+    .ant-tabs-tabpane .ant-tabs-tabpane-active .search-or-rated {
+        display: flex;
+        justify-content: center;
+    }
+
+}
