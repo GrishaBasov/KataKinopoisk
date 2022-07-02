@@ -23,7 +23,6 @@ export default class TmdbService {
     if (!res.ok) {
       throw new Error(`Could not fetch received ${res.status}`);
     }
-    // eslint-disable-next-line no-return-await
     return await res.json();
   }
 
@@ -53,7 +52,6 @@ https://api.themoviedb.org/3/guest_session/${sessionId}/rated/movies?api_key=3c5
     let newArr = [];
     newArr.push(dataObject.results);
     newArr.push(dataObject.total_pages);
-    console.log(dataObject.results);
     return newArr;
   }
 
