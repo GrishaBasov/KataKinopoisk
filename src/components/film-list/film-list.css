@@ -12,6 +12,7 @@
 
 .film-list-pagination {
     background-color: #FFFFFF;
+    padding-bottom: 20px;
 }
 
 .pagination {
@@ -20,6 +21,10 @@
     display: flex;
     justify-content: center;
     height: 60px;
+}
+
+.display-none {
+    display: none;
 }
 
 @media (max-width: 479px) {

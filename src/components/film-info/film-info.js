@@ -3,19 +3,19 @@ import Rating from '../Rate';
 
 import './film-info.css';
 
-import { format } from 'date-fns';
-import SwapiService from '../../services';
 import { GenresConsumer } from '../genres-context/genres-context';
+import TmdbService from '../../services';
+import { format } from 'date-fns';
 
 export default class FilmInfo extends Component {
   id = 100;
 
-  swapiService = new SwapiService();
+  tmdbService = new TmdbService();
 
   rateFilm = (value) => {
     const { id, sessionId } = this.props;
     localStorage.setItem(id, value);
-    this.swapiService.rateFilm(id, value, sessionId);
+    this.tmdbService.rateFilm(id, value, sessionId);
   };
 
   makeGenresList = (arr) => {
@@ -28,38 +28,59 @@ export default class FilmInfo extends Component {
     });
   };
 
+  formatTime = (date) => {
+    if (date.length !== 0) {
+      return format(new Date(date), 'MMM dd, yyyy');
+    } else {
+      return null;
+    }
+  };
+
   render() {
-    const { id, name, date, description, posterPath, vote_average, genresId } =
+    const { id, name, description, posterPath, vote_average, genresId, date } =
       this.props;
 
     let voteClassName = 'vote-average';
-    if (vote_average > 0 && vote_average < 3) {
+    if (vote_average >= 0 && vote_average <= 3) {
       voteClassName += ' low';
     }
-    if (vote_average > 3 && vote_average < 5) {
+    if (vote_average > 3 && vote_average <= 5) {
       voteClassName += ' low-middle';
     }
-    if (vote_average > 5 && vote_average < 7) {
+    if (vote_average > 5 && vote_average <= 7) {
       voteClassName += ' middle';
     }
     if (vote_average > 7) {
       voteClassName += ' high';
     }
 
+    let ratingStars = 'rating';
+
+    if (vote_average === 0) {
+      ratingStars += ' display-none';
+    }
+
+    let poster = (
+      <img
+        alt='movie'
+        className='movie'
+        src={`https://image.tmdb.org/t/p/w500/${posterPath}`}
+      />
+    );
+
+    if (!posterPath) {
+      poster = <div className='no-poster'>Обложка не найдена</div>;
+    }
+
     return (
       <div key={id} className='wrapper'>
-        <img
-          alt='movie'
-          className='movie'
-          src={`https://image.tmdb.org/t/p/w500/${posterPath}`}
-        />
-
+        {poster}
         <div className='main-info'>
           <div className='header-info'>
             <h5 className='header'>{name}</h5>
             <div className={voteClassName}>{vote_average}</div>
           </div>
-          <div className='date'>{format(new Date(date), 'MMM dd, yyyy')}</div>
+          <div className='date'>{this.formatTime(date)}</div>
           <GenresConsumer>
             {(genres) => {
               let arr = [];
@@ -75,7 +96,7 @@ export default class FilmInfo extends Component {
             }}
           </GenresConsumer>
           <div className='description'>{description}</div>
-          <div className='rating'>
+          <div className={ratingStars}>
             <Rating id={id} rateFilm={this.rateFilm} />
           </div>
         </div>

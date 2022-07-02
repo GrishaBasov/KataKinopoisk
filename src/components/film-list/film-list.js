@@ -3,25 +3,19 @@ import FilmInfo from '../film-info';
 import React, { Component } from 'react';
 
 export default class FilmList extends Component {
-  makeFilmList = (data, minIndex, maxIndex, sessionId) => {
-    return data.map((item, index) => {
+  makeFilmList = (data, sessionId) => {
+    return data.map((item) => {
       const { id, ...itemProps } = item;
-
-      if (index >= minIndex && index < maxIndex) {
-        return (
-          <FilmInfo sessionId={sessionId} key={id} id={id} {...itemProps} />
-        );
-      }
-      return null;
+      return <FilmInfo sessionId={sessionId} key={id} id={id} {...itemProps} />;
     });
   };
 
   render() {
-    const { data, pagination, minIndex, maxIndex, sessionId } = this.props;
+    const { data, sessionId, pagination } = this.props;
 
-    const elements = this.makeFilmList(data, minIndex, maxIndex, sessionId);
+    const elements = this.makeFilmList(data, sessionId);
 
-    if (elements.length < 6) {
+    if (elements.length === 0) {
       return (
         <div className='film-list-pagination'>
           <div className='film-list'>{elements}</div>

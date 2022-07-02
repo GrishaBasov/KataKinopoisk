@@ -1,14 +1,18 @@
-export default class SwapiService {
-  async getResource(searchInput) {
+export default class TmdbService {
+  async getResource(searchInput, page) {
     const res = await fetch(
-      `https://api.themoviedb.org/3/search/movie?api_key=3c514dc79b590afda05cd35907b9c661&language=en-US&query=${searchInput}&page=1&include_adult=false`
+      `https://api.themoviedb.org/3/search/movie?api_key=3c514dc79b590afda05cd35907b9c661&language=en-US&query=${searchInput}&page=${page}&include_adult=false`
     );
 
     if (!res.ok) {
       throw new Error(`Could not fetch received ${res.status}`);
     }
     const dataObject = await res.json();
-    return dataObject.results;
+    let newArr = [];
+    newArr.push(dataObject.results);
+    newArr.push(dataObject.total_pages);
+
+    return newArr;
   }
 
   async createGuestSession() {
@@ -40,13 +44,17 @@ export default class SwapiService {
     return await res.json();
   }
 
-  async getRated(sessionId) {
+  async getRated(sessionId, page) {
     const res = await fetch(
       `
-https://api.themoviedb.org/3/guest_session/${sessionId}/rated/movies?api_key=3c514dc79b590afda05cd35907b9c661&language=en-US&sort_by=created_at.asc`
+https://api.themoviedb.org/3/guest_session/${sessionId}/rated/movies?api_key=3c514dc79b590afda05cd35907b9c661&language=en-US&sort_by=created_at.asc&page=${page}`
     );
     const dataObject = await res.json();
-    return dataObject.results;
+    let newArr = [];
+    newArr.push(dataObject.results);
+    newArr.push(dataObject.total_pages);
+    console.log(dataObject.results);
+    return newArr;
   }
 
   async getGenres() {

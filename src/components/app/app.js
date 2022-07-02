@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import FilmList from '../film-list';
 import { GenresProvider } from '../genres-context/genres-context';
 import './app.css';
-import SwapiService from '../../services';
+import TmdbService from '../../services';
 import Spinner from '../spinner';
 import AlertMessage from '../error-alert';
 import NoDataMessage from '../no-data-message';
@@ -12,69 +12,86 @@ import 'antd/dist/antd.min.css';
 
 const { TabPane } = Tabs;
 
-const pageSize = 6;
 let page = '1';
 
 export default class App extends Component {
-  // maxId = 100;
   state = {
     data: [],
     genres: '',
     loading: true,
     error: false,
     noData: false,
-    totalPage: 0,
-    current: 1,
-    minIndex: 0,
-    maxIndex: 0,
+    totalPages: 50,
     sessionId: null,
+    filmTitle: 'Batman',
+    current: 1,
+    search: true,
   };
 
-  swapiService = new SwapiService();
+  tmdbService = new TmdbService();
 
   componentDidMount() {
     localStorage.clear();
-    this.swapiService.createGuestSession().then((res) => {
+    this.tmdbService.createGuestSession().then((res) => {
       this.setState({
         sessionId: res.guest_session_id,
       });
     });
 
-    this.swapiService.getGenres().then((res) => {
+    this.tmdbService.getGenres().then((res) => {
       this.setState({
         genres: res,
       });
     });
 
-    this.setData();
+    this.setData(this.state.filmTitle, this.state.current);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.current !== prevState.current) {
+      if (this.state.search === true) {
+        this.setData();
+      } else this.setRatedData();
+    }
   }
 
   newSearch = (text) => {
     if (text.length > 0) {
+      this.setState({
+        filmTitle: text,
+        current: 1,
+      });
       this.setData(text);
     }
   };
 
   cut(str) {
-    if (str.length < 150) {
-      let arr = str.split(' ');
-      let arrLastLetter = arr[arr.length - 1].slice(-1);
-      if (arr[arr.length - 1] === '...') {
-        return arr.join(' ');
-      } else if (
-        arrLastLetter === '.' ||
-        arrLastLetter === '?' ||
-        arrLastLetter === ','
-      ) {
-        arr = arr.slice(0, -1);
-        return arr.join(' ') + ' ...';
-      } else {
-        return str + ' ...';
-      }
+    if (str.length === 0) {
+      return 'Description not found';
+    }
+    if (str.length < 130) {
+      return str;
     } else {
-      let arrOfWords = str.split(' ');
-      let newString = arrOfWords.slice(0, -1).join(' ');
-      return this.cut(newString);
+      if (str.length < 160) {
+        let arr = str.split(' ');
+        let arrLastLetter = arr[arr.length - 1].slice(-1);
+        if (arr[arr.length - 1] === '...') {
+          return arr.join(' ');
+        } else if (
+          arrLastLetter === '.' ||
+          arrLastLetter === '?' ||
+          arrLastLetter === ','
+        ) {
+          arr = arr.slice(0, -1);
+          return arr.join(' ') + ' ...';
+        } else {
+          return str + ' ...';
+        }
+      } else {
+        let arrOfWords = str.split(' ');
+        let newString = arrOfWords.slice(0, -1).join(' ');
+        return this.cut(newString);
+      }
     }
   }
 
@@ -85,22 +102,20 @@ export default class App extends Component {
     });
   };
 
-  setRatedData = () => {
-    const sessionId = this.state.sessionId;
+  setRatedData() {
     this.cleanData();
-    this.swapiService
-      .getRated(sessionId)
+    this.tmdbService
+      .getRated(this.state.sessionId, this.state.current)
       .then((res) => {
-        res.forEach((item) => {
+        let [filmList, totalPages] = res;
+        filmList.forEach((item) => {
           const newItem = this.createItem(item);
           this.setState(({ data }) => {
             const newArray = [newItem, ...data];
             return {
               data: newArray,
               noData: false,
-              totalPage: data.length / pageSize,
-              minIndex: 0,
-              maxIndex: pageSize,
+              totalPages: totalPages * 10,
             };
           });
         });
@@ -117,31 +132,30 @@ export default class App extends Component {
           this.onError();
         }
       });
-  };
+  }
 
-  setData(filmName = 'batman') {
+  setData(text = this.state.filmTitle) {
     this.cleanData();
-    this.swapiService
-      .getResource(filmName)
-      .then((info) => {
-        if (info.length === 0) {
+    this.tmdbService
+      .getResource(text, this.state.current)
+      .then((res) => {
+        let [filmList, totalPages] = res;
+        if (filmList.length === 0) {
           this.setState(() => {
             return {
               noData: true,
             };
           });
-        }
-        if (info.length !== 0) {
-          info.forEach((item) => {
+        } else {
+          filmList.forEach((item) => {
             const newItem = this.createItem(item);
             this.setState(({ data }) => {
               const newArray = [newItem, ...data];
               return {
                 data: newArray,
                 noData: false,
-                totalPage: data.length / pageSize,
-                minIndex: 0,
-                maxIndex: pageSize,
+                totalPages: totalPages * 10,
+                filmTitle: text,
               };
             });
           });
@@ -160,14 +174,6 @@ export default class App extends Component {
         }
       });
   }
-
-  handleChange = (page) => {
-    this.setState({
-      current: page,
-      minIndex: (page - 1) * pageSize,
-      maxIndex: page * pageSize,
-    });
-  };
 
   onError = () => {
     this.setState({
@@ -192,10 +198,18 @@ export default class App extends Component {
   onChange = (key) => {
     if (key === '2') {
       page = '2';
+      this.setState({
+        current: 1,
+        search: false,
+      });
       this.setRatedData();
     }
     if (key === '1') {
       page = '1';
+      this.setState({
+        search: true,
+        current: 1,
+      });
       this.setData();
     }
   };
@@ -212,14 +226,16 @@ export default class App extends Component {
       });
     });
 
-    const { loading, noData, current, data, error } = this.state;
+    const { loading, noData, error, totalPages, current } = this.state;
 
     const pagination = (
       <Pagination
-        pageSize={pageSize}
+        onChange={(page) => {
+          this.setState({ current: page });
+        }}
         current={current}
-        total={data.length}
-        onChange={this.handleChange}
+        total={totalPages}
+        defaultCurrent={1}
         style={{ bottom: '0px' }}
       />
     );
@@ -227,11 +243,9 @@ export default class App extends Component {
     const spinner = loading ? <Spinner /> : null;
     const filmList = !loading ? (
       <FilmList
+        pagination={pagination}
         sessionId={this.state.sessionId}
         data={this.state.data}
-        pagination={pagination}
-        minIndex={this.state.minIndex}
-        maxIndex={this.state.maxIndex}
       />
     ) : null;
 
@@ -248,6 +262,7 @@ export default class App extends Component {
           {filmList}
         </TabPane>
         <TabPane tab='Rated' key='2'>
+          {showNoData}
           {spinner}
           {filmList}
         </TabPane>

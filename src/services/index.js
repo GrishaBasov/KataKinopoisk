@@ -1,3 +1,2 @@
-import SwapiService from './services';
-
-export default SwapiService;
+import TmdbService from './services';
+export default TmdbService;
